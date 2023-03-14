@@ -1,10 +1,7 @@
 package com.vitalhub.AthleteMS.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Blob;
 import java.sql.Date;
@@ -17,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "ATHLETE")
+@ToString
 public class Athlete {
     @Id
     @Column(name = "athlete_id")

@@ -42,35 +42,23 @@ public class AthleteBOImpl implements AthleteBO {
     }
     @Override
     public List<AthleteDTO> getAllAthlete() throws Exception {
+
         List<AthleteDTO> athleteDTOList = new ArrayList<>();
         try {
             List<Athlete> allAthlete = athleteDAO.findAll();
+
             for (Athlete ath:allAthlete) {
                 List<EventDTO> eDto = new ArrayList<>();
                 for (Event e:ath.getEventsToParticipate()) {
                     eDto.add(new EventDTO(e.getEventId(),e.getEventName()));
                 }
-                athleteDTOList.add(new AthleteDTO(ath.getAthleteId(),ath.getFirstName(),ath.getLastName(),ath.getGender(),ath.getDateOfBirth(),ath.getCountry(),eDto,blobToByte(ath.getProfileImage())));
+                athleteDTOList.add(new AthleteDTO(ath.getAthleteId(),ath.getFirstName(),ath.getLastName(),ath.getGender(),ath.getDateOfBirth(),ath.getCountry(),eDto,ath.getProfileImage().toString().getBytes()));
             }
             return athleteDTOList;
         }catch (Exception e){
             throw e;
         }
     }
-
-//    @Override
-//    public List<AthleteDTO> getAthleteByCustomData(String Name, String gender, String country, String event) throws Exception {
-//        List<AthleteDTO> athleteDTOList = new ArrayList<>();
-//        try {
-//            List<Athlete> allAthlete = athleteDAO.findAll();
-//            for (Athlete ath:allAthlete) {
-//                athleteDTOList.add(new AthleteDTO(ath.getAthleteId(),ath.getFirstName(),ath.getLastName(),ath.getGender(),ath.getDateOfBirth(),ath.getCountry(),ath.getProfileImage()));
-//            }
-//            return athleteDTOList;
-//        }catch (Exception e){
-//            throw e;
-//        }
-//    }
 
     @Override
     @Transactional
@@ -96,60 +84,5 @@ public class AthleteBOImpl implements AthleteBO {
         }catch (Exception e){
             throw e;
         }
-    }
-
-
-
-    public static String getAthleteFilterType(String Name, String gender, String country, String event){
-        return null;
-    }
-
-    public static byte[] blobToByte(Blob image) throws Exception {
-        try {
-            int blobLength = (int) image.length();
-            byte[] blobAsBytes = image.getBytes(1, blobLength);
-            return decompressBytes(blobAsBytes);
-        }catch (Exception e){
-            throw e;
-        }
-    }
-
-    public static byte[] decompressBytes(byte[] data) throws IOException, DataFormatException {
-        Inflater inflater = new Inflater();
-        inflater.setInput(data);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[1024];
-        try {
-            while (!inflater.finished()) {
-                int count = inflater.inflate(buffer);
-                outputStream.write(buffer, 0, count);
-            }
-            outputStream.close();
-            return outputStream.toByteArray();
-        } catch (IOException ioe) {
-            throw ioe;
-        } catch (DataFormatException e) {
-            throw e;
-        }
-    }
-
-    public static byte[] compressBytes(byte[] data) {
-        Deflater deflater = new Deflater();
-        deflater.setInput(data);
-        deflater.finish();
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[1024];
-        while (!deflater.finished()) {
-            int count = deflater.deflate(buffer);
-            outputStream.write(buffer, 0, count);
-        }
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-        }
-        System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
-
-        return outputStream.toByteArray();
     }
 }
